@@ -1,0 +1,36 @@
+{
+    "variables": {
+	"aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+	"aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+	"base_ami": "",
+	"region": ""
+    },
+    "builders": [
+	{
+	    "type": "amazon-ebs",
+	    "access_key": "{{user `aws_access_key`}}",
+	    "secret_key": "{{user `aws_secret_key`}}",
+	    "region": "{{user `region`}}",
+	    "source_ami": "{{user `base_ami`}}",
+	    "instance_type": "t2.micro",
+	    "ami_name": "pm_windows_stack {{timestamp}}",
+	    "communicator": "winrm",
+	    "winrm_username": "Administrator",
+	    "user_data_file": "user-data.ps1"
+	}
+    ],
+    "provisioners" : [
+	{
+	    "type": "chef-solo",
+	    "prevent_sudo": true,
+	    "run_list": ["iis::default"],
+	    "only": ["amazon-ebs"],
+	    "staging_directory": "c:/windows/temp",
+	    "skip_install": true,
+	    "install_command": "@powershell -NoProfile -ExecutionPolicy unrestricted -Command \"(New-Object System.Net.WebClient).DownloadFile('http://www.getchef.com/chef/install.msi', 'C:\\Windows\\Temp\\chef.msi');Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait\"",
+	    "execute_command": "c:/opscode/chef/bin/chef-client.bat --no-color -c {{.ConfigPath}} -j {{.JsonPath}}"
+	}
+
+    ]
+
+}

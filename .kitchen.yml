@@ -1,0 +1,32 @@
+driver:
+  name: ec2
+  aws_ssh_key_id: pennymac-build
+  region: us-west-2
+  availability_zone: a
+  instance_type: t2.large
+  associate_public_ip: true
+  interface: dns
+  security_group_ids: ["sg-3f4fef5b"]
+  retryable_tries: 100
+
+
+transport:
+  ssh_key: /Users/adimarco/Downloads/pennymac-build.pem
+  connection_timeout: 10
+  connection_retries: 5
+  username: administrator
+
+platforms:
+  - name: windows-2012r2
+    driver:
+      image_id: ami-4dbcb67d
+
+suites:
+  # - name: default
+  #   run_list:
+  #     - recipe[pm_windows::default]
+  #   attributes:
+
+  - name: default
+    run_list:
+      - recipe[iis::default]
