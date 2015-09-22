@@ -15,22 +15,22 @@
 	    "instance_type": "t2.micro",
 	    "ami_name": "pm_windows_stack {{timestamp}}",
 	    "communicator": "winrm",
-	    "winrm_username": "Administrator",
-	    "user_data_file": "user-data.ps1"
+	    "winrm_username": "packer",
+	    "winrm_password": "FooBar@123",
+	    "user_data_file": "ec2-user-data.ps1"
 	}
     ],
     "provisioners" : [
 	{
-	    "type": "chef-solo",
-	    "prevent_sudo": true,
-	    "run_list": ["iis::default"],
+	    "type": "powershell",
 	    "only": ["amazon-ebs"],
-	    "staging_directory": "c:/windows/temp",
-	    "skip_install": true,
-	    "install_command": "@powershell -NoProfile -ExecutionPolicy unrestricted -Command \"(New-Object System.Net.WebClient).DownloadFile('http://www.getchef.com/chef/install.msi', 'C:\\Windows\\Temp\\chef.msi');Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait\"",
-	    "execute_command": "c:/opscode/chef/bin/chef-client.bat --no-color -c {{.ConfigPath}} -j {{.JsonPath}}"
+	    "inline": ["(New-Object System.Net.WebClient).DownloadFile('http://www.getchef.com/chef/install.msi', 'C:\\Windows\\Temp\\chef.msi');Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait"]
+	},
+	{
+	    "type": "file",
+	    "source": "./berks-cookbooks",
+	    "destination": "c:/windows/temp/berks-cookbooks"
 	}
-
     ]
 
 }
