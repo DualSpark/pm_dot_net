@@ -23,13 +23,26 @@
     "provisioners" : [
 	{
 	    "type": "powershell",
-	    "only": ["amazon-ebs"],
 	    "inline": ["(New-Object System.Net.WebClient).DownloadFile('http://www.getchef.com/chef/install.msi', 'C:\\Windows\\Temp\\chef.msi');Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait"]
 	},
 	{
 	    "type": "file",
 	    "source": "./berks-cookbooks",
 	    "destination": "c:/windows/temp/berks-cookbooks"
+	},
+	{
+	    "type": "file",
+	    "source": "./solo.rb",
+	    "destination": "c:/windows/temp/solo.rb"
+	},
+	{
+	    "type": "file",
+	    "source": "./node.json",
+	    "destination": "c:/windows/temp/node.json"
+	},
+	{
+	    "type": "powershell",
+	    "inline": ["cd C:\\Windows\\Temp ; C:\\opscode\\chef\\bin\\chef-solo.bat -c solo.rb -j node.json"]	   
 	}
     ]
 
